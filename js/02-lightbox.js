@@ -2,58 +2,30 @@
 import { galleryItems } from './gallery-items.js';
 // Change code below this line
 
-
-
-
-
 const paletteContainer = document.querySelector(".gallery");
-const cardsMarkup = createGallery(galleryItems);
-paletteContainer.insertAdjacentHTML('beforeend', cardsMarkup)
 
-paletteContainer.addEventListener('click', onPaletteContainerClick);
-
-function createGallery(galleryItems) {
-    
-    return galleryItems
-        .map(({ preview, description, original }) => {
-            return `
-        <li>
-            <a class="gallery__item" href="${original}">
-                <img class="gallery__image" src="${preview}" alt="${description}" />
-            </a>
-        </li>
-        `;
-        })
-        .join('');
-    
-
-}
+const listImages = galleryItems
+                    .map(item => `<div class='gallery__item'>
+                                    <a class="gallery__link" href=${item.original}>
+                                        <img class='gallery__image'
+                                            src = ${item.preview}
+                                            alt = ${item.description}
+                                        />
+                                    </a>
+                                </div>`)
+                    .join('');
 
 
 
-function onPaletteContainerClick (event) {
-    const link = getLinkOriginalImage(event);
+paletteContainer.innerHTML = listImages;
 
-    var lightbox =  new SimpleLightbox('.gallery .gallery__item', {link});
-    lightbox.show(window.addEventListener('keydown', isEscapeDown));
-    function isEscapeDown (evt) {
-        if (evt.code === 'Escape'){
-            lightbox.close(window.removeEventListener('keydown', isEscapeDown));        
-        } if (evt.code === 'click') {
-            lightbox.close(window.removeEventListener('keydown', isEscapeDown));  
-        }
-    }
-}
+paletteContainer.addEventListener('click', showModal);
 
-function getLinkOriginalImage(event) {
-    if (event.target.nodeName !== 'IMG'){
+const lightbox = new SimpleLightbox('.gallery a', {captions: true, captionSelector: 'img', captionsData: 'alt', captionDelay: 250});
+
+function showModal(event) {
+    if (event.target.nodeName !== 'IMG') {
         return;
     }
-    
     event.preventDefault();
-    
-    const linkImagePreview = event.target;
-    const linkImageOriginal = galleryItems.find(item => item.preview === linkImagePreview.src).original;
-    
-    return linkImageOriginal;
 }
